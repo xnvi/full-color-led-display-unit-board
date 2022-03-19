@@ -1,37 +1,22 @@
 # 全彩LED点阵屏
 
-#### 介绍
+## 简介
 一个简易的全彩LED点阵屏程序，计划开发时钟、温度、音乐频谱、bad apple、全彩动画、文字显示等功能
 
-#### 软件架构
-软件架构说明
+硬件原理图
+TODO
+
+视频演示
+TODO
+
+## 硬件说明
+
+### 屏幕规格
+尺寸：256mm * 128mm
+分辨率：64 * 32
+接口：HUB75
+规格：P4，全彩，16扫
 
 
-#### 安装教程
+## 软件说明
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 使用说明
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
-
-
-#### 特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
