@@ -146,7 +146,7 @@ unsigned char BCD_DEC(unsigned char num)
 	return num;
 }
 
-unsigned char BCD_to_DEC (unsigned char num)
+unsigned char BCD_to_DEC(unsigned char num)
 {
 //	num = ((num & 0xF0) >> 4) * 10 + (num & 0x0F);
 //	if(num > 99)
@@ -161,7 +161,7 @@ unsigned char BCD_to_DEC (unsigned char num)
 	return ((num & 0xF0) >> 4) * 10 + (num & 0x0F);
 }
 
-unsigned char DEC_to_BCD (unsigned char num)
+unsigned char DEC_to_BCD(unsigned char num)
 {
 //	if(num > 99)
 //	{

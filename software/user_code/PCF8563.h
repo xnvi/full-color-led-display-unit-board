@@ -39,10 +39,11 @@ void PCF8563_Init(void);
 void ReadTime(void);
 void FormatTime(void);
 void time_to_dec(void);
+void time_to_bcd(void);
 void SaveTime(void);
 unsigned char BCD_INC(unsigned char num);
 unsigned char BCD_DEC(unsigned char num);
-unsigned char BCD_to_DEC (unsigned char num);
-unsigned char DEC_to_BCD (unsigned char num);
+unsigned char BCD_to_DEC(unsigned char num);
+unsigned char DEC_to_BCD(unsigned char num);
 
 #endif

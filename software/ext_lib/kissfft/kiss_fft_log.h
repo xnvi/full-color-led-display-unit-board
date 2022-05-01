@@ -17,6 +17,8 @@
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
+#define NDEBUG
+
 #if defined(NDEBUG)
 # define KISS_FFT_LOG_MSG(severity, ...) ((void)0)
 #else
