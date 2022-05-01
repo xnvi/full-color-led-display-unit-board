@@ -2,17 +2,8 @@
 #include "usmart_str.h"
 ////////////////////////////用户配置区///////////////////////////////////////////////
 //这下面要包含所用到的函数所申明的头文件(用户自己添加) 
-//#include "delay.h"	 	
-//#include "sys.h"
-//#include "lcd.h"
-//#include "sdram.h"
-// #include "pwm.h"
 #include "stm32f1xx_hal.h"
 #include "utils.h"
-//#include "flight.h"
-								 
-// extern void led_set(u8 sta);
-// extern void test_fun(void(*ledset)(u8),u8 sta);
 
 //函数名列表初始化(用户自己添加)
 //用户直接在这里输入要执行的函数名及其查找串
@@ -50,22 +41,3 @@ struct _m_usmart_dev usmart_dev=
 	0,	  	//每个参数的长度暂存表,需要MAX_PARM个0初始化
 	0,		//函数的参数,需要PARM_LEN个0初始化
 };   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -433,16 +433,3 @@ void write_addr(u32 addr,u32 val)
 	*(u32*)addr=val; 	
 }
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-

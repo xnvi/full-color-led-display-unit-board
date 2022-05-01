@@ -424,17 +424,3 @@ u8 usmart_get_fparam(u8*str,u8 *parn)
 	*parn=n;	//记录参数的个数
 	return USMART_OK;//正确得到了参数
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

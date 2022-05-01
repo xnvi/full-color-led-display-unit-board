@@ -132,33 +132,3 @@ u32 usmart_get_runtime(void);	//获取运行时间
 void usmart_reset_runtime(void);//复位运行时间
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,6 +1,5 @@
 #ifndef __USMART_STR_H
-#define __USMART_STR_H	 
-#include "myinteger.h"
+#define __USMART_STR_H
 //#include "sys.h"
 //////////////////////////////////////////////////////////////////////////////////	 
 //本程序只供学习使用，未经作者许可，不得用于其它任何用途
@@ -65,7 +64,15 @@
 //V3.3 20160506
 //修正usmart_exe函数在USMART_ENTIMX_SCAN为0的时候，报错的bug
 /////////////////////////////////////////////////////////////////////////////////////
-  
+
+typedef signed int s32;
+typedef signed short int s16;
+typedef char s8;
+
+typedef unsigned int u32;
+typedef unsigned short int u16;
+typedef unsigned char u8;
+
 u8 usmart_get_parmpos(u8 num);						//得到某个参数在参数列里面的起始位置
 u8 usmart_strcmp(u8*str1,u8 *str2);					//对比两个字符串是否相等
 u32 usmart_pow(u8 m,u8 n);							//M^N次方
@@ -75,14 +82,3 @@ u8 usmart_get_fname(u8*str,u8*fname,u8 *pnum,u8 *rval);		//从str中得到函数名
 u8 usmart_get_aparm(u8 *str,u8 *fparm,u8 *ptype); 	//从str中得到一个函数参数
 u8 usmart_get_fparam(u8*str,u8 *parn);  			//得到str中所有的函数参数.
 #endif
-
-
-
-
-
-
-
-
-
-
-
