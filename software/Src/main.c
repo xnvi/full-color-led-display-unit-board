@@ -15,12 +15,37 @@
   *
   ******************************************************************************
   */
+
 /* USER CODE END Header */
+
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+#include <math.h>
+#include "delay.h"
+#include "usmart.h"
+#include "usart1.h"
+#include "key.h"
+#include "i2c.h"
+#include "mgl.h"
+#include "led_screen.h"
+#include "sfud.h"
+#include "stm32f1xx_ll_spi.h"
+#include "stm32f1xx_ll_usart.h"
+#include "ringbuffer.h"
+#include "utils.h"
+#include "font_lite.h"
+#include "menu.h"
+#include "clock.h"
+#include "audio_visual.h"
+#include "PCF8563.h"
+#include "SHT30.h"
 
 /* USER CODE END Includes */
 
@@ -31,6 +56,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -51,6 +77,15 @@ UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+uint8_t strbuf[32];
+uint8_t rb_buf[512];
+rb_handle rb_ctx;
+
+sfud_err result = SFUD_SUCCESS;
+// sfud_flash *flash = sfud_get_device_table() + 0;
+sfud_flash *flash = NULL;
+
+menu_node *menu_p = NULL;
 
 /* USER CODE END PV */
 
@@ -80,6 +115,11 @@ static void MX_TIM3_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+	uint8_t key = 0;
+	uint8_t *spi_wbuf = NULL;
+	int32_t spi_waddr = 0;
+	int32_t spi_wlen = 0;
+	int32_t ret = 0;
 
   /* USER CODE END 1 */
 
@@ -109,13 +149,162 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
+	LL_SPI_Enable(SPI1);//SPI初始化完成后手动开启SPI，否则后面我自己写的SPI收发函数不能工作
+	HAL_TIM_Base_Start_IT(&htim1);
+	HAL_TIM_Base_Start_IT(&htim3);
+
+	LL_USART_EnableIT_RXNE(USART1);//接收缓冲区非空中断使能
+	HAL_NVIC_SetPriority(USART1_IRQn, 1, 0);
+	HAL_NVIC_EnableIRQ(USART1_IRQn);
+	usmart_dev.init(72);//串口调试工具的初始化，这个参数是MCU主频，单位MHz
 
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  	flash = sfud_get_device(0);
+  	ret = sfud_init();
+	printf("sfud_init return %d\r\n", ret);
+
+	rb_init_sta(&rb_ctx, rb_buf, sizeof(rb_buf));
+
+	mgl_init(NULL, 0);
+	extern uint16_t *gram_rgb_565;
+	gram_rgb_565 = (uint16_t *)mgl_get_gram_addr();
+
+	IICInit();
+	PCF8563_Init();
+	SHT30Init();
+	audio_visual_init();
+
+	printf("sys init finish\r\n");
+
   while (1)
   {
+	if(USART1_RX_RAW)
+	{
+		spi_waddr = 0;
+		HAL_TIM_Base_Stop_IT(&htim1);
+		HAL_TIM_Base_Stop_IT(&htim3);
+		HAL_Delay(100);
+		while(1)
+		{
+			spi_wlen = 256;
+			spi_wbuf = rb_preread(&rb_ctx, &spi_wlen);
+			if(spi_wbuf != NULL)
+			{
+				result = sfud_write(flash, spi_waddr, 256, spi_wbuf);
+				if (result == SFUD_SUCCESS) {
+					rb_preread_free(&rb_ctx, 256);
+					spi_waddr += 256;
+					printf("write finish at 0x%08X\r\n", spi_waddr);
+				} else {
+					printf("write failed at 0x%08X\r\n", spi_waddr);
+					break;
+				}
+			}
+		}
+	}
+
+	key = key_read();
+
+	if(KEY_IS_RISING(key, 1))
+	{
+		menu_p = &menu_node_root;
+		key = 0;
+		menu_show_select_item(menu_p);
+	}
+	if(KEY_IS_RISING(key, 2))
+	{
+		key = 0;
+		audio_visual();
+	}
+	if(KEY_IS_RISING(key, 3))
+	{
+		key = 0;
+		show_temperature();
+	}
+	if(KEY_IS_RISING(key, 4))
+	{
+		key = 0;
+		show_humidity();
+	}
+
+	if(menu_p == NULL)
+	{
+		set_fg_color(color_map[g_screen_color_index]);
+		set_bg_color(0x0000);
+		display_time();
+		HAL_Delay(200);
+	}
+
+	while(menu_p)
+	{
+		HAL_Delay(100);
+
+		key = key_read();
+		// printf("key val %d", key);
+
+		if(KEY_IS_RISING(key, 3))
+		{
+			if(menu_p->cursor > 0)
+			{
+				menu_p->cursor -= 1;
+			}
+			if(menu_p->head > menu_p->cursor)
+			{
+				menu_p->head = menu_p->cursor;
+			}
+			menu_show_select_item(menu_p);
+		}
+		else if(KEY_IS_RISING(key, 4))
+		{
+			if(menu_p->cursor < menu_p->num - 1)
+			{
+				menu_p->cursor += 1;
+			}
+			if(menu_p->head + MENU_MAX_SHOW_NUM - 1 < menu_p->cursor)
+			{
+				menu_p->head = menu_p->cursor - (MENU_MAX_SHOW_NUM - 1);
+			}
+			menu_show_select_item(menu_p);
+		}
+		else if(KEY_IS_RISING(key, 1))
+		{
+			if(menu_p->item[menu_p->cursor].function != NULL)
+			{
+				menu_p->item[menu_p->cursor].function();
+			}
+			else if(menu_p->item[menu_p->cursor].child != NULL)
+			{
+				menu_p = menu_p->item[menu_p->cursor].child;
+			}
+			else
+			{
+				// menu_p = menu_p->parent;
+				// if(menu_p == NULL)
+				// {
+				// 	// 直接返回待机界面
+				// 	return;
+				// }
+			}
+			menu_show_select_item(menu_p);
+		}
+		else if(KEY_IS_RISING(key, 2))
+		{
+			menu_p = NULL;
+			mgl_clean();
+		}
+		key = 0;
+	}
+
+	// if(key)
+	// {
+	// 	printf("key %d \r\n", key);
+	// 	key = 0;
+	// }
+	HAL_Delay(20);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
